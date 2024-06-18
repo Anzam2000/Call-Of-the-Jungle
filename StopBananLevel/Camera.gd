@@ -1,5 +1,8 @@
 extends Camera3D
-var mouse = Vector2(	)
+
+var mouse = Vector2()
+@export var score_by_banana :int = 100
+signal get_points
 
 func _input(event):
 	if event is InputEventMouse:
@@ -9,10 +12,12 @@ func _input(event):
 			get_selection()
 
 func get_selection():
-	var worlspace = get_world_3d().direct_space_state
+	var worldspace = get_world_3d().direct_space_state
 	var start = project_ray_origin(mouse)
 	var end = project_position(mouse, 1000)
-	var result = worlspace.intersect_ray(start)
-	print(result)
-
+	var result = worldspace.intersect_ray(PhysicsRayQueryParameters3D.create(start, end))
+	if (result["collider"].name == "Banana"):
+		result["collider"].queue_free()
+		get_points.emit(score_by_banana)
+	
 	
